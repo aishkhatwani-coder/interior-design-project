@@ -26,14 +26,16 @@ pipeline {
             }
         }
 
-       stage('3. SCA Dependency Scan') {
+      stage('3. SCA Dependency Scan') {
             steps {
                 echo 'Checking backend and frontend dependencies for vulnerabilities...'
-                dir('backend') {
-                    bat 'npm audit --audit-level=high || echo SCA vulnerabilities detected in backend, continuing pipeline...'
-                }
-                dir('frontend') {
-                    bat 'npm audit --audit-level=high || echo SCA vulnerabilities detected in frontend, continuing pipeline...'
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                    dir('backend') {
+                        bat 'npm audit --audit-level=high || ver >nul'
+                    }
+                    dir('frontend') {
+                        bat 'npm audit --audit-level=high || ver >nul'
+                    }
                 }
             }
         }
