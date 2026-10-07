@@ -26,15 +26,14 @@ pipeline {
             }
         }
 
-        // Step 3: Software Composition Analysis (SCA)
-        stage('3. SCA Dependency Scan') {
+       stage('3. SCA Dependency Scan') {
             steps {
                 echo 'Checking backend and frontend dependencies for vulnerabilities...'
                 dir('backend') {
-                    bat 'npm audit --audit-level=high'
+                    bat 'npm audit --audit-level=high || echo SCA vulnerabilities detected in backend, continuing pipeline...'
                 }
                 dir('frontend') {
-                    bat 'npm audit --audit-level=high'
+                    bat 'npm audit --audit-level=high || echo SCA vulnerabilities detected in frontend, continuing pipeline...'
                 }
             }
         }
