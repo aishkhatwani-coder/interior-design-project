@@ -74,25 +74,28 @@ pipeline {
 
         stage('9. Blue-Green Deployment') {
             steps {
-                echo 'Deploying to staging / green environment...'
-                bat 'echo Deployed to Green environment.'
+                echo 'Deploying backend via PM2 Process Manager...'
+                dir('backend') {
+                    // PM2 process start/restart karega background me bina terminal block kiye
+                    bat 'pm2 describe interior-backend >nul 2>nul && pm2 reload interior-backend || pm2 start server.js --name interior-backend'
+                }
             }
         }
 
         stage('10. Automated Health Checks') {
             steps {
-                echo 'Running smoke tests and endpoint health checks...'
-                bat 'echo All health checks returned 200 OK.'
+                echo 'Pinging Backend API at http://localhost:5000/api/portfolio...'
+                // Windows curl command se response check karna
+                bat 'curl -s -o nul -w "%%{http_code}" http://localhost:5000/api/portfolio'
             }
         }
 
         stage('11. Switch Traffic / Auto Rollback') {
             steps {
-                echo 'Switching live traffic from Blue to Green...'
-                bat 'echo Traffic route switched successfully.'
+                echo 'Verifying PM2 status and ensuring traffic stability...'
+                bat 'pm2 status'
             }
         }
-
         stage('12. Monitoring & Logging') {
             steps {
                 echo 'Emitting deployment metrics and triggering alerts...'
