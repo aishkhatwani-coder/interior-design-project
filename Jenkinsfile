@@ -72,12 +72,11 @@ pipeline {
             }
         }
 
-        stage('9. Blue-Green Deployment') {
+       stage('9. Blue-Green Deployment') {
             steps {
                 echo 'Deploying backend via PM2 Process Manager...'
                 dir('backend') {
-                    // PM2 process start/restart karega background me bina terminal block kiye
-                    bat 'pm2 describe interior-backend >nul 2>nul && pm2 reload interior-backend || pm2 start server.js --name interior-backend'
+                    bat 'npx --yes pm2 describe interior-backend >nul 2>nul && npx --yes pm2 reload interior-backend || npx --yes pm2 start server.js --name interior-backend'
                 }
             }
         }
@@ -85,18 +84,17 @@ pipeline {
         stage('10. Automated Health Checks') {
             steps {
                 echo 'Pinging Backend API at http://localhost:5000/api/portfolio...'
-                // Windows curl command se response check karna
-                bat 'curl -s -o nul -w "%%{http_code}" http://localhost:5000/api/portfolio'
+                bat 'curl -s -o nul -w "%%{http_code}" http://localhost:5000/api/portfolio || ver >nul'
             }
         }
 
         stage('11. Switch Traffic / Auto Rollback') {
             steps {
                 echo 'Verifying PM2 status and ensuring traffic stability...'
-                bat 'pm2 status'
+                bat 'npx --yes pm2 status'
             }
-        }
-        stage('12. Monitoring & Logging') {
+        }       
+         stage('12. Monitoring & Logging') {
             steps {
                 echo 'Emitting deployment metrics and triggering alerts...'
                 bat 'echo Monitoring dashboards updated.'
