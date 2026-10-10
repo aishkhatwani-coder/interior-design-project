@@ -109,8 +109,5 @@ pipeline {
         failure {
             echo 'DevSecOps Pipeline failed! Check logs.'
         }
-        always {
-            cleanWs()
-        }
-    }
+            }
 }
